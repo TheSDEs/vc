@@ -1,0 +1,19 @@
+name: vc-ubuntu
+
+on: [push]
+
+jobs:
+  VM-test-job:
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install git python3-dev python3-pip docker-compose curl -y
+          bash -c 'export PATH="$PATH:$HOME/.local/bin" && \
+          git clone https://github.com/SUNET/vc.git && \
+          dc vc && \
+	  make docker-build && make start && \
+	  sleep 5 && \
+	  docker logs vc_issuer'
