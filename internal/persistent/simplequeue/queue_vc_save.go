@@ -7,13 +7,17 @@ import (
 	"vc/pkg/model"
 
 	retask "github.com/masv3971/goretask"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.opentelemetry.io/otel/codes"
 )
 
 // VCPersistentSave holds the ladok delete signed queue
 type VCPersistentSave struct {
-	service *Service
-	log     *logger.Log
+	service              *Service
+	log                  *logger.Log
+	metricEnqueueCounter prometheus.Counter
+	metricWorkerCounter  prometheus.Counter
 	*retask.Queue
 }
 
@@ -26,6 +30,15 @@ func NewVCPersistentSave(ctx context.Context, service *Service, queueName string
 
 	vcPersistentSave.Queue = vcPersistentSave.service.queueClient.NewQueue(ctx, queueName)
 
+	vcPersistentSave.metricEnqueueCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "persistent_queue_vc_save_enqueue_total",
+		//Help: "The total number of added messages to the eduseal_del_signed queue",
+	})
+
+	vcPersistentSave.metricWorkerCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "persistent_queue_vc_save_worker_total",
+	})
+
 	vcPersistentSave.log.Info("Started")
 
 	return vcPersistentSave, nil
@@ -36,6 +49,8 @@ func (s *VCPersistentSave) Enqueue(ctx context.Context, message any) (*retask.Jo
 	s.log.Info("Enqueue")
 	ctx, span := s.service.tp.Start(ctx, "simplequeue:VCPersistentSave:Enqueue")
 	defer span.End()
+
+	s.metricEnqueueCounter.Inc()
 
 	data, err := json.Marshal(message)
 	if err != nil {
@@ -94,6 +109,7 @@ func (s *VCPersistentSave) Worker(ctx context.Context) error {
 			return err
 		case task := <-taskChan:
 			s.log.Info("Got task", "task", task.Data)
+			s.metricWorkerCounter.Inc()
 			document := &model.Upload{}
 			if err := json.Unmarshal([]byte(task.Data), document); err != nil {
 				span.SetStatus(codes.Error, err.Error())
