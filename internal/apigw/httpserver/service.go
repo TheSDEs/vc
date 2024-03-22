@@ -33,7 +33,7 @@ type Service struct {
 	gin       *gin.Engine
 	tlsConfig *tls.Config
 	tp        *trace.Tracer
-	metrics   metrics
+	metrics   *metrics
 }
 
 // New creates a new httpserver service
@@ -46,7 +46,7 @@ func New(ctx context.Context, config *model.Cfg, api *apiv1.Client, tp *trace.Tr
 		server: &http.Server{
 			ReadHeaderTimeout: 2 * time.Second,
 		},
-		metrics: metrics{},
+		metrics: &metrics{},
 	}
 
 	s.metrics.init()

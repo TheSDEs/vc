@@ -14,10 +14,9 @@ import (
 
 // VCPersistentSave holds the ladok delete signed queue
 type VCPersistentSave struct {
-	service              *Service
-	log                  *logger.Log
-	metricEnqueueCounter prometheus.Counter
-	metricWorkerCounter  prometheus.Counter
+	service             *Service
+	log                 *logger.Log
+	metricWorkerCounter prometheus.Counter
 	*retask.Queue
 }
 
@@ -29,11 +28,6 @@ func NewVCPersistentSave(ctx context.Context, service *Service, queueName string
 	}
 
 	vcPersistentSave.Queue = vcPersistentSave.service.queueClient.NewQueue(ctx, queueName)
-
-	vcPersistentSave.metricEnqueueCounter = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "persistent_queue_vc_save_enqueue_total",
-		//Help: "The total number of added messages to the eduseal_del_signed queue",
-	})
 
 	vcPersistentSave.metricWorkerCounter = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "persistent_queue_vc_save_worker_total",
@@ -49,8 +43,6 @@ func (s *VCPersistentSave) Enqueue(ctx context.Context, message any) (*retask.Jo
 	s.log.Info("Enqueue")
 	ctx, span := s.service.tp.Start(ctx, "simplequeue:VCPersistentSave:Enqueue")
 	defer span.End()
-
-	s.metricEnqueueCounter.Inc()
 
 	data, err := json.Marshal(message)
 	if err != nil {
