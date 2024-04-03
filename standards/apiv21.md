@@ -463,7 +463,8 @@ http OK 200, else 400 and error body
 | string | member_state                 | true | MUST comply with ISO 3166-1 alpha-2 AND MUST only include EU countries |
 | string | valid_from                   | true | iso8601 utc |
 | string | valid_to                     | true | iso8601 utc |
-| string | created_at                   | false | iso8601 utc |
+| string | issued_at                    | true | iso8601 utc |
+| string | expired_at                   | true | iso8601 utc |
 
 ### identity{}
 
@@ -498,10 +499,11 @@ http OK 200, else 400 and error body
 
 |type| Attribute | required | description |
 |-|-|-|-|
-| integer | version             | true | must be > 0 |
-| string | type                 | true | For internal display interpretation/differentiation |
-| string | description_short    | true | To display in the portal |
-| string | description_long     | true | To display in the portal |
+| integer | version                 | true | must be > 0 |
+| string | type                     | true | For internal display interpretation/differentiation |
+| string | description_short        | true | To display in the portal |
+| string | description_long         | true | To display in the portal |
+| object | structured_information   | true | Structured information to be used in in portal |
 
 ### document_data{}
 
