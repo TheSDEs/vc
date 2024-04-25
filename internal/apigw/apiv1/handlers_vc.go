@@ -39,9 +39,8 @@ func (c *Client) Upload(ctx context.Context, req *UploadRequest) error {
 		return err
 	}
 
-		ctx, span := c.tp.Start(ctx, "apiv1:Upload")
+	ctx, span := c.tp.Start(ctx, "apiv1:Upload")
 	defer span.End()
-
 
 	qr, err := req.Meta.QRGenerator(ctx, c.cfg.Common.QR.BaseURL, c.cfg.Common.QR.RecoveryLevel, c.cfg.Common.QR.Size)
 	if err != nil {
@@ -82,14 +81,14 @@ func (c *Client) Upload(ctx context.Context, req *UploadRequest) error {
 	}
 	c.log.Debug("Document enqueued for saving", "document_id", req.Meta.DocumentID)
 
-		data, err := json.Marshal(req)
+	data, err := json.Marshal(req)
 	if err != nil {
 		c.log.Error(err, "failed to marshal request")
 		span.SetStatus(codes.Error, err.Error())
 		return err
 	}
 
-	if err := c.queue.Enqueue(ctx, topicnames.QueuingVCSaveDocumentV0, req.Meta.UID, data, []protocol.Header{}); err != nil {
+	if err := c.queue.Enqueue(ctx, topicnames.QueuingVCSaveDocumentV0, req.Meta.DocumentID, data, []protocol.Header{}); err != nil {
 		c.log.Error(err, "failed to write message to kafka")
 		span.SetStatus(codes.Error, err.Error())
 		return err
@@ -226,7 +225,6 @@ func (c *Client) GetDocument(ctx context.Context, req *GetDocumentRequest) (*Get
 
 	ctx, span := c.tp.Start(ctx, "apiv1:GetDocument")
 	defer span.End()
-
 
 	query := &model.MetaData{
 		DocumentID:      req.DocumentID,
