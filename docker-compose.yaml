@@ -184,8 +184,8 @@ services:
       - "9092:9092"
       - "9094:9094"
     networks:
-      vc-net:
-        ipv4_address: 172.16.50.12
+      vc-dev-net:
+        ipv4_address: 172.16.50.30
     volumes:
       - "kafka_data:/bitnami"
     environment:
@@ -210,10 +210,10 @@ services:
     depends_on:
       - kafka_1
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
-      vc-net:
-        ipv4_address: 172.16.50.13
+      vc-dev-net:
+        ipv4_address: 172.16.50.31
     environment:
       DYNAMIC_CONFIG_ENABLED: 'true'
       LOGGING_LEVEL_ROOT: 'DEBUG'
@@ -225,15 +225,14 @@ services:
     depends_on:
       - kafka_1
     networks:
-      vc-net:
-        ipv4_address: 172.16.50.14
+      vc-dev-net:
+        ipv4_address: 172.16.50.32
     command: --kafka.server=vc_kafka_1:9092
     healthcheck:
       test: "bash -c 'printf \"\" > /dev/tcp/127.0.0.1/9308; exit $$?;'"
       interval: 5s
       timeout: 10s
       retries: 3
-      start_period: 5s
 
 networks:
   vc-dev-net:
