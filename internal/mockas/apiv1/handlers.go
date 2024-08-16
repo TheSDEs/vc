@@ -3,6 +3,7 @@ package apiv1
 import (
 	"context"
 	"errors"
+	apiv1_status "vc/internal/gen/status/apiv1.status"
 	"vc/pkg/model"
 )
 
@@ -85,4 +86,10 @@ func (c *Client) MockBulk(ctx context.Context, inData *MockBulkRequest) (*MockBu
 	return &MockBulkReply{
 		DocumentIDS: documentIDS,
 	}, nil
+}
+
+func (c *Client) Status(ctx context.Context, req *apiv1_status.StatusRequest) (*apiv1_status.StatusReply, error) {
+	probes := model.Probes{}
+	status := probes.Check("mockas")
+	return status, nil
 }
