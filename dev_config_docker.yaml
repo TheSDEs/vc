@@ -28,6 +28,9 @@ common:
     size: 256
   kafka:
     enabled: true
+    brokers:
+      - "kafka0:9092"
+      - "kafka1:9092"
 
 issuer:
   api_server:
