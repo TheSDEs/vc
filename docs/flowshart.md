@@ -18,5 +18,5 @@
     apigw->>issuer: gRPC makeSDJWT();
     issuer->>apigw: Callback;
     apigw->>satosa: Callback;
-    satosa->>wallet openID Federation;
+    satosa->>wallet: openID Federation;
 ```
