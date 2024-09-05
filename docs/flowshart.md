@@ -13,10 +13,10 @@
 
 ```mermaid
     sequenceDiagram;
-    wallet->>satosa;
-    satosa->>apigw;
-    apigw->>issuer;
-    issuer->>apigw;
-    apigw->>satosa;
-    satosa->>wallet;
+    wallet->>satosa: openID Federation;
+    satosa->>apigw: POST /credential;
+    apigw->>issuer: gRPC makeSDJWT();
+    issuer->>apigw: Callback;
+    apigw->>satosa: Callback;
+    satosa->>wallet openID Federation;
 ```
